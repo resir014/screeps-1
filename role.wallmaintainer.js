@@ -1,5 +1,5 @@
 
-var roleRepairer = {
+var roleWallMaintainer = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
@@ -46,22 +46,8 @@ var roleRepairer = {
             var structToRepair = creep.room.find(FIND_STRUCTURES);
             
             structToRepair = structToRepair.filter(function(object){
-                return ((object.hits < (object.hitsMax - (object.hitsMax * 0.2)) && object.structureType !== STRUCTURE_WALL));
+                return (object.structureType === STRUCTURE_WALL && object.hits < 20000);
             });
-            
-            if(structToRepair.length == 0){
-                var structToRepair = creep.room.find(FIND_STRUCTURES);
-            
-                structToRepair = structToRepair.filter(function(object){
-                    return (object.structureType === STRUCTURE_WALL && object.hits < 20000);
-                });
-                
-                if(creep.pos.isNearTo(structToRepair[0])){
-                    creep.repair(structToRepair[0]);
-                } else {
-                    creep.moveTo(structToRepair[0]);
-                }
-            }
             
             if(creep.pos.isNearTo(structToRepair[0])){
                 creep.repair(structToRepair[0]);
@@ -72,4 +58,4 @@ var roleRepairer = {
     }
 };
 
-module.exports = roleRepairer;
+module.exports = roleWallMaintainer;

@@ -2,7 +2,11 @@ var roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        if(creep.carry.energy < creep.carryCapacity) {
+        if(creep.carry.energy == 0){
+            creep.memory.droppingOff = false;
+        }
+        
+        if(creep.carry.energy < creep.carryCapacity && creep.memory.droppingOff == false) {
             var sources = Game.spawns.Spawn1.pos.findClosestByPath(FIND_SOURCES);
             
             if(creep.pos.isNearTo(sources)){
@@ -12,18 +16,49 @@ var roleHarvester = {
             }
         }
         else {
+            creep.memory.droppingOff = true;
             var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION ||
+                        return (
+                            (
+                                structure.structureType == STRUCTURE_EXTENSION ||
                                 structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                                structure.structureType == STRUCTURE_TOWER && 
+                                structure.energy < structure.energyCapacity
+                            )
+                        ) ;
                     }
             });
+            
+            if(targets.length == 0){
+                var targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_CONTAINER &&
+                        (_.sum(structure.store) < structure.storeCapacity));
+                    }
+                });
+            }
+            
+            // walks through each possible target looking for storage space
             if(targets.length > 0) {
-                if(creep.pos.isNearTo(targets[0])){
-                    creep.transfer(targets[0], RESOURCE_ENERGY);
-                } else {
-                    creep.moveTo(targets[0]);
+                for(target in targets){
+                    if(targets[target].structureType != STRUCTURE_CONTAINER && targets[target].energy < targets[target].energyCapacity){
+                        if(creep.pos.isNearTo(targets[target])){
+                            creep.transfer(targets[target], RESOURCE_ENERGY);
+                            break;
+                        } else {
+                            creep.moveTo(targets[target]);
+                            break;
+                        }
+                    } else if (targets[target].structureType == STRUCTURE_CONTAINER && (_.sum(targets[target].store) < targets[target].storeCapacity)){
+                        if(creep.pos.isNearTo(targets[target])){
+                            creep.transfer(targets[target], RESOURCE_ENERGY);
+                            break;
+                        } else {
+                            creep.moveTo(targets[target]);
+                            break;
+                        }
+                    }
                 }
             }
         }

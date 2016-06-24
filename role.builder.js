@@ -1,10 +1,6 @@
 var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
-        if(typeof creep.memory.building === 'undefined'){
-            creep.memory.upgrading = false;
-        }
-        
         if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;
         }
@@ -35,6 +31,12 @@ var roleBuilder = {
                         var walls = constructionSites.filter(function(object) {
                             return object.structureType === STRUCTURE_WALL;
                         })
+                        
+                        if (walls.length === 0){
+                        var rampart = constructionSites.filter(function(object) {
+                            return object.structureType === STRUCTURE_RAMPART;
+                        })
+                    }
                     }
                 }  
             } 
@@ -44,18 +46,27 @@ var roleBuilder = {
             if(roads.length > 0){
                 for(var i = 0; i < roads.length; i++){
                     target = roads[i];
+                    break;
                 }
             } else if(extensions.length > 0){
                 for(var i = 0; i < extensions.length; i++){
                     target = extensions[i];
+                    break;
                 }
             } else if(containers.length > 0){
                 for(var i = 0; i < containers.length; i++){
                     target = containers[i];
+                    break;
                 }
             } else if(walls.length > 0){
                 for(var i = 0; i < walls.length; i++){
                     target = walls[i];
+                    break;
+                }
+            } else if(rampart.length > 0){
+                for(var i = 0; i < rampart.length; i++){
+                    target = rampart[i];
+                    break;
                 }
             } else {
                 var rand = Math.round(Math.random()  * (constructionSites.length - 1) + 1);
@@ -69,11 +80,43 @@ var roleBuilder = {
             }
         }
         else {
-            var sources = creep.pos.findClosestByPath(FIND_SOURCES);
-            if(creep.pos.isNearTo(sources)){
-                creep.harvest(sources)
+            var targets = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_CONTAINER &&
+                    (_.sum(structure.store) > creep.carryCapacity));
+                }
+            });
+            
+            if (targets == null){
+                var targets = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (
+                            (
+                                (structure.structureType == STRUCTURE_EXTENSION && 
+                                structure.energy > creep.carryCapacity) ||
+                                (structure.structureType == STRUCTURE_SPAWN && 
+                                structure.energy > creep.carryCapacity)
+                            )
+                        ) ;
+                    }
+                });
+                
+                if(creep.pos.isNearTo(targets)){
+                    if(targets.energy > creep.carryCapacity){
+                        targets.transferEnergy(creep)
+                    }    
+                } else {
+                    creep.moveTo(targets);
+                }    
+                
             } else {
-                creep.moveTo(sources);
+                if(creep.pos.isNearTo(targets)){
+                    if(_.sum(targets.store) > creep.carryCapacity){
+                        targets.transfer(creep, RESOURCE_ENERGY)
+                    }    
+                } else {
+                    creep.moveTo(targets);
+                }  
             }
         }
     }
