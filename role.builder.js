@@ -33,10 +33,22 @@ var roleBuilder = {
                         })
                         
                         if (walls.length === 0){
-                        var rampart = constructionSites.filter(function(object) {
-                            return object.structureType === STRUCTURE_RAMPART;
-                        })
-                    }
+                            var rampart = constructionSites.filter(function(object) {
+                                return object.structureType === STRUCTURE_RAMPART;
+                            })
+                            
+                            if (rampart.length === 0){
+                                var tower = constructionSites.filter(function(object) {
+                                    return object.structureType === STRUCTURE_TOWER;
+                                })
+                                
+                                if (tower.length === 0){
+                                var storage = constructionSites.filter(function(object) {
+                                    return object.structureType === STRUCTURE_STORAGE;
+                                })
+                            }
+                            }
+                        }
                     }
                 }  
             } 
@@ -68,6 +80,16 @@ var roleBuilder = {
                     target = rampart[i];
                     break;
                 }
+            } else if(tower.length > 0){
+                for(var i = 0; i < tower.length; i++){
+                    target = tower[i];
+                    break;
+                }
+            } else if(storage.length > 0){
+                for(var i = 0; i < storage.length; i++){
+                    target = storage[i];
+                    break;
+                }
             } else {
                 var rand = Math.round(Math.random()  * (constructionSites.length - 1) + 1);
                 target = constructionSites[rand];
@@ -80,44 +102,15 @@ var roleBuilder = {
             }
         }
         else {
-            var targets = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_CONTAINER &&
-                    (_.sum(structure.store) > creep.carryCapacity));
+            var spawn = Game.spawns.Spawn1;
+            if(creep.pos.isNearTo(spawn)){
+                if(Memory.builderQueue == false){
+                    spawn.transferEnergy(creep);
                 }
-            });
-            
-            if (targets == null){
-                var targets = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (
-                            (
-                                (structure.structureType == STRUCTURE_EXTENSION && 
-                                structure.energy > creep.carryCapacity) ||
-                                (structure.structureType == STRUCTURE_SPAWN && 
-                                structure.energy > creep.carryCapacity)
-                            )
-                        ) ;
-                    }
-                });
-                
-                if(creep.pos.isNearTo(targets)){
-                    if(targets.energy > creep.carryCapacity){
-                        targets.transferEnergy(creep)
-                    }    
-                } else {
-                    creep.moveTo(targets);
-                }    
-                
             } else {
-                if(creep.pos.isNearTo(targets)){
-                    if(_.sum(targets.store) > creep.carryCapacity){
-                        targets.transfer(creep, RESOURCE_ENERGY)
-                    }    
-                } else {
-                    creep.moveTo(targets);
-                }  
-            }
+                creep.moveTo(spawn);
+            }    
+            
         }
     }
 };

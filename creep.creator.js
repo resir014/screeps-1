@@ -12,25 +12,39 @@ var creepCreator = {
         
         if(harvesters.length < 3) {
             this.createBasicCreep('harvester');
-        } else if(upgraders.length < 3) {
+        } else if(upgraders.length < 4) {
             this.createBasicCreep('upgrader');
-        } else if(builders.length < 2) {
+        } else if(builders.length < 4) {
             this.createBasicCreep('builder');
         } else if(repairers.length < 1) {
             this.createBasicCreep('repairer');
-        } else if(wallMaintainer.length < 1) {
+        }  else if(wallMaintainer.length < 0) {
             this.createBasicCreep('wallmaintainer');
         }
     },
     createBasicCreep: function(role){
-        var basicCreepTemplate = [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE];
+        var emergencyCreepTemplate =[WORK, CARRY, MOVE];
+        var basicCreepTemplate = [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
         
-        var status = Game.spawns.Spawn1.createCreep(basicCreepTemplate, role + (Math.round(Math.random() * (20 - 1) + 1)), {role: role});
+        var status = Game.spawns.Spawn1.createCreep(emergencyCreepTemplate, role + (Math.round(Math.random() * (20 - 1) + 1)), {role: role});
         
         if(status == -6){
             console.log("Waiting on resources to build " + role)
         } else {
             console.log("Building " + role)
+        }
+    },
+    
+    createNewCreep: function(){
+        var emergencyCreepTemplate =[WORK, CARRY, CARRY, MOVE];
+        var basicCreepTemplate = [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
+        
+        var status = Game.spawns.Spawn1.createCreep(basicCreepTemplate, 'creep' + (Math.round(Math.random() * (20 - 1) + 1)), {});
+        
+        if(status == -6){
+            console.log("Waiting on resources to build needed creep");
+        } else {
+            console.log("Building new creep");
         }
     } 
 }

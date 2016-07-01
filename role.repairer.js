@@ -46,23 +46,17 @@ var roleRepairer = {
             var structToRepair = creep.room.find(FIND_STRUCTURES);
             
             structToRepair = structToRepair.filter(function(object){
-                return ((object.hits < (object.hitsMax - (object.hitsMax * 0.2)) && object.structureType !== STRUCTURE_WALL));
+                return ((object.hits < (object.hitsMax - (object.hitsMax * 0.1)) && (object.structureType !== STRUCTURE_WALL && object.structureType !== STRUCTURE_ROAD)));
             });
             
-            if(structToRepair.length == 0){
-                var structToRepair = creep.room.find(FIND_STRUCTURES);
-            
-                structToRepair = structToRepair.filter(function(object){
-                    return (object.structureType === STRUCTURE_WALL && object.hits < 20000);
-                });
+            if (structToRepair.length == 0){
+                structToRepair = creep.room.find(FIND_STRUCTURES);
                 
-                if(creep.pos.isNearTo(structToRepair[0])){
-                    creep.repair(structToRepair[0]);
-                } else {
-                    creep.moveTo(structToRepair[0]);
-                }
+                structToRepair = structToRepair.filter(function(object){
+                    return ((object.hits < (object.hitsMax - (object.hitsMax * 0.1)) && object.structureType !== STRUCTURE_WALL));
+                });
             }
-            
+
             if(creep.pos.isNearTo(structToRepair[0])){
                 creep.repair(structToRepair[0]);
             } else {

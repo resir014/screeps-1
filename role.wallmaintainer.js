@@ -46,7 +46,7 @@ var roleWallMaintainer = {
             var structToRepair = creep.room.find(FIND_STRUCTURES);
             
             structToRepair = structToRepair.filter(function(object){
-                return (object.structureType === STRUCTURE_WALL && object.hits < 20000);
+                return (object.structureType === STRUCTURE_WALL && object.hits < 200000);
             });
             
             if(creep.pos.isNearTo(structToRepair[0])){

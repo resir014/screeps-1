@@ -6,6 +6,8 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 var wallMaintainer = require('role.wallmaintainer');
+var sourceHarvester = require('source.harvester');
+var sourceCollector = require('source.collector');
 
 var creepRunner = {
     run: function(){

@@ -23,7 +23,7 @@ var roleUpgrader = {
             
         }
         else {
-            var sources = creep.pos.findClosestByPath(FIND_SOURCES)
+            var sources = Game.getObjectById('576a9c0d57110ab231d886a5');
             
             if(creep.pos.isNearTo(sources)){
                 creep.harvest(sources)

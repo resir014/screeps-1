@@ -7,7 +7,7 @@ var roleHarvester = {
         }
         
         if(creep.carry.energy < creep.carryCapacity && creep.memory.droppingOff == false) {
-            var sources = Game.spawns.Spawn1.pos.findClosestByPath(FIND_SOURCES);
+            var sources = Game.getObjectById('576a9c0d57110ab231d886a7');
             
             if(creep.pos.isNearTo(sources)){
                 creep.harvest(sources)
@@ -17,23 +17,25 @@ var roleHarvester = {
         }
         else {
             creep.memory.droppingOff = true;
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (
-                            (
-                                structure.structureType == STRUCTURE_EXTENSION ||
-                                structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_TOWER && 
-                                structure.energy < structure.energyCapacity
-                            )
-                        ) ;
-                    }
-            });
             
+            var targets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (
+                        (
+                            (structure.structureType == STRUCTURE_EXTENSION ||
+                            structure.structureType == STRUCTURE_SPAWN ||
+                            structure.structureType == STRUCTURE_TOWER ||
+                            structure.structureType == STRUCTURE_STORAGE) && 
+                            structure.energy < structure.energyCapacity
+                        )
+                    ) ;
+                }
+            });
+
             if(targets.length == 0){
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_CONTAINER &&
+                        return ((structure.structureType == STRUCTURE_CONTAINER) &&
                         (_.sum(structure.store) < structure.storeCapacity));
                     }
                 });
